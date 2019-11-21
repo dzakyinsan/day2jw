@@ -1,0 +1,30 @@
+*{
+    padding: 0;
+    margin: 0;
+}
+div{
+    border: 1px solid yellow;
+}
+.header{
+    padding: 10px 20px;
+    background-color: lightcoral;
+}
+.jumbotron-1{
+    height: 600px;
+    display: flex;
+    /* align-items: stretch; */
+}
+.sidebar{
+    padding:50px 0px 0px 50px;
+    background-color: lightseagreen;
+    flex: 1;
+}
+.konten{
+    padding:50px 0px 0px 50px;
+    background-color: lightsteelblue;
+    flex: 5;
+}
+.bawah{
+    background: mediumaquamarine;
+    height: 75px;
+}
