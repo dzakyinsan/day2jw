@@ -15,7 +15,9 @@ const MySwal = withReactContent(Swal)
 class Home extends Component {
     state = {
         data:[],
-        isopen:false
+        isopen:false,
+        indexedit:-1,
+        modaledit:false
     }
 
     componentDidMount(){
@@ -79,6 +81,36 @@ class Home extends Component {
           })
     }
 
+    onmodaleditClick=(index)=>{
+        this.setState({modaledit:true,indexedit:index})
+    }
+
+    onUpdatedataClick=()=>{
+        var newdata=this.state.data
+        var objnewdata={
+            kegiatan:this.refs.editkegiatan.value,
+            status:this.refs.editstatus.value==='true'?true:false,
+            tanggal:this.refs.edittanggal.value
+        }
+        newdata.splice(this.state.indexedit,1,objnewdata)
+        this.setState({data:newdata,modaledit:false,indexedit:-1})
+        MySwal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+            onOpen: (toast) => {
+              toast.addEventListener('mouseenter', Swal.stopTimer)
+              toast.addEventListener('mouseleave', Swal.resumeTimer)
+            }
+        }).fire({
+            icon: 'success',
+            title: 'edit sukses broo'
+        })
+
+    }
+    
     renderTodo=()=>{
         return this.state.data.map((val,index)=>{
             return(
@@ -88,7 +120,7 @@ class Home extends Component {
                     <td>{val.status?'Sudah':'Belom'}</td>
                     <td>{val.tanggal}</td>
                     <td>
-                        <button className='btn btn-primary mr-4'>Edit </button>
+                        <button onClick={()=>this.onmodaleditClick(index)} className='btn btn-primary mr-4'>Edit </button>
                         <button onClick={()=>this.onDeletedataClick(index)} className='btn btn-danger'>Delete</button>
                     </td>
                 </tr>
@@ -96,10 +128,45 @@ class Home extends Component {
         })
     }
 
-    render() { 
+    render() {
+        const {data,indexedit}=this.state 
+        if(data.length===0){
+            return <div>Loading</div>
+        }
         return (
             <div>
-
+                 {/* modal Edit data start */}
+                 {
+                     indexedit===-1?
+                     null
+                     :
+                 <Modal isOpen={this.state.modaledit} toggle={()=>this.setState({modaledit:false})}>
+                    <ModalHeader>
+                        Edit Doto
+                    </ModalHeader>
+                    <ModalBody>
+                        <input className='form-control mt-2 mb-2' defaultValue={data[indexedit].kegiatan} placeholder='kegiatan' type="text" ref='editkegiatan'/>
+                        {
+                            data[indexedit].status?
+                            <select className='form-control' ref='editstatus'>
+                                <option selected value={true}>Sudah</option>
+                                <option value={false}>Belum</option>
+                            </select>
+                            :
+                            <select className='form-control' ref='editstatus'>
+                                <option  value={true}>Sudah</option>
+                                <option selected value={false}>Belum</option>
+                            </select>
+                        }
+                        <input className='form-control mt-2' defaultValue={data[indexedit].tanggal} placeholder='tanggal' type="date" ref='edittanggal'/>
+                    </ModalBody>
+                    <ModalFooter>
+                        <button onClick={this.onUpdatedataClick}  className='btn btn-success'>Save</button>
+                        <button  className='btn btn-danger' onClick={()=>this.setState({modaledit:false})}>Cancel</button>
+                    </ModalFooter>
+                </Modal>
+             
+                 }
                 {/* modal add data start */}
                 <Modal isOpen={this.state.isopen} toggle={()=>this.setState({isopen:false})}>
                     <ModalHeader>
